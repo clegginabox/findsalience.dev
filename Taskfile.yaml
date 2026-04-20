@@ -1,0 +1,92 @@
+version: '3'
+
+dotenv: ['.env.local']
+
+tasks:
+  bash:
+    desc: Runs a bash prompt inside the PHP container
+    cmds:
+      - docker compose exec omni bash
+
+  console:
+    desc: Runs the Symfony Console
+    cmds:
+      - docker compose exec omni bin/console {{.CLI_ARGS}}
+
+  phpstan:
+    desc: Runs PHPStan
+    cmds:
+      - docker compose exec omni php -d pcov.enabled=0 vendor/bin/phpstan --memory-limit=1024M
+
+  check:
+    desc: Runs all code style checks
+    cmds:
+      - docker compose exec omni vendor/bin/mago guard --sort
+      - docker compose exec omni vendor/bin/mago lint --sort --baseline lint-baseline.toml
+      - docker compose exec omni vendor/bin/mago analyze --baseline analysis-baseline.toml
+
+  mago:lint:
+    desc: Runs Mago linter
+    cmds:
+      - docker compose exec omni vendor/bin/mago lint --sort --baseline lint-baseline.toml
+
+  mago:format:
+    desc: Runs Mago formatter
+    cmds:
+      - docker compose exec omni vendor/bin/mago fmt
+
+  mago:analyse:
+    desc: Runs Mago analyser
+    cmds:
+      - docker compose exec omni vendor/bin/mago analyze --baseline analysis-baseline.toml
+
+  mago:guard:
+    desc: Runs Mago guard
+    cmds:
+      - docker compose exec omni vendor/bin/mago guard --sort
+
+  lint:
+    desc: PHP Linting
+    cmds:
+      - docker compose exec omni php vendor/bin/parallel-lint --exclude .git --exclude .docker --exclude vendor .
+
+  build:
+    desc: Runs tailwind build
+    cmds:
+      - docker compose exec omni php bin/console tailwind:build
+      - cd assets/react/build && npm run build
+
+  watch:
+    desc: Runs tailwind watch
+    cmds:
+      - docker compose exec omni php bin/console tailwind:build --watch
+
+  tests:unit:
+    desc: Run unit tests only
+    cmds:
+      - docker compose exec omni vendor/bin/phpunit -c phpunit.xml --testdox --testdox-summary
+
+  tests:mutation:
+    desc: Runs mutations tests
+    cmds:
+      - docker compose exec omni vendor/bin/infection --threads=4 --show-mutations=max --min-msi=85
+
+  tests:integration:
+    desc: Run integration tests only
+    cmds:
+      - docker compose exec omni vendor/bin/phpunit -c phpunit.integration.xml --testdox --testdox-summary
+
+  rector:
+    desc: Runs Rector
+    cmds:
+      - docker compose exec omni php -d pcov.enabled=0 vendor/bin/rector process
+
+  composer:install:
+    desc: Runs composer install
+    cmds:
+      - docker compose exec omni composer install
+
+  composer:update:
+    desc: Runs composer update
+    cmds:
+      - docker compose exec omni composer update
