@@ -1,4 +1,6 @@
 {
+    "name": "clegginabox/findsalience.dev",
+    "description": "Public website for findsalience.dev",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
