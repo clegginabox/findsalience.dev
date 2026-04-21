@@ -1,4 +1,6 @@
+.idea/
 
+assets/
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
