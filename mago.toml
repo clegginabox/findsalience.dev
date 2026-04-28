@@ -10,6 +10,8 @@ paths = [
 includes = ["vendor"]
 excludes = []
 
+
+
 [formatter]
 print-width = 120
 tab-width = 4
